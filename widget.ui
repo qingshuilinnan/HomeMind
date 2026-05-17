@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HomeMind</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="mainContainer">
+     <layout class="QVBoxLayout" name="containerLayout">
+      <item>
+       <widget class="QWidget" name="statusBarWidget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>60</height>
+         </size>
+        </property>
+        <layout class="QHBoxLayout" name="statusBarLayout">
+         <property name="leftMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="weatherContainer" native="true">
+           <property name="styleSheet">
+            <string>background-color: #f0f2f5; border-radius: 15px;</string>
+           </property>
+           <layout class="QHBoxLayout" name="weatherLayout">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <property name="leftMargin">
+             <number>15</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>10</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="weatherLabel">
+              <property name="text">
+               <string>天气: 晴天</string>
+              </property>
+              <property name="styleSheet">
+               <string>font-weight: bold; color: #606266;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="outdoorTempLabel">
+              <property name="text">
+               <string>室外温度: 22°C</string>
+              </property>
+              <property name="styleSheet">
+               <string>font-weight: bold; color: #606266; margin-left: 10px;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="locationButton">
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>定位</string>
+              </property>
+              <property name="styleSheet">
+               <string>background-color: transparent; color: #409eff; font-weight: normal; padding: 0;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="timeLabel">
+           <property name="text">
+            <string>时间: 12:00</string>
+           </property>
+           <property name="styleSheet">
+            <string>font-size: 16px; font-weight: bold; color: #303133;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="tempHumidityLabel">
+           <property name="text">
+            <string>温湿度: 25°C / 50%</string>
+           </property>
+           <property name="styleSheet">
+            <string>color: #909399;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="mainTabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="roomTab">
+         <attribute name="title">
+          <string>房间管理</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="roomLayout">
+          <item>
+           <widget class="QListWidget" name="roomListWidget">
+            <property name="iconSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="movement">
+             <enum>QListView::Static</enum>
+            </property>
+            <property name="flow">
+             <enum>QListView::LeftToRight</enum>
+            </property>
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="resizeMode">
+             <enum>QListView::Adjust</enum>
+            </property>
+            <property name="layoutMode">
+             <enum>QListView::Batched</enum>
+            </property>
+            <property name="spacing">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addRoomButton">
+            <property name="text">
+             <string>添加房间</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="deviceTab">
+         <attribute name="title">
+          <string>所有设备</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="deviceLayout">
+          <item>
+           <widget class="QListWidget" name="allDevicesListWidget">
+            <property name="iconSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="sceneTab">
+         <attribute name="title">
+          <string>情景管理</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="sceneLayout">
+          <item>
+           <widget class="QListWidget" name="sceneListWidget">
+            <property name="iconSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addSceneButton">
+            <property name="text">
+             <string>添加情景</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="taskTab">
+         <attribute name="title">
+          <string>任务</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="taskLayout">
+          <item>
+           <widget class="QListWidget" name="taskListWidget">
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addTaskButton">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>+ 添加自动化任务</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="accountTab">
+         <attribute name="title">
+          <string>我的</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="accountLayout">
+          <item>
+           <widget class="QGroupBox" name="securityGroupBox">
+            <property name="title">
+             <string>安全</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QPushButton" name="changePasswordButton">
+               <property name="text">
+                <string>修改密码</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="bindPhoneButton">
+               <property name="text">
+                <string>绑定手机号</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="userManagementButton">
+            <property name="text">
+             <string>用户管理</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="checkUpdateButton">
+            <property name="text">
+             <string>检查更新</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="logoutButton">
+            <property name="text">
+             <string>退出登录</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="usernameLabel">
+            <property name="text">
+             <string>当前登录: </string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

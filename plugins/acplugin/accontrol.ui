@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ACControl</class>
+ <widget class="QWidget" name="ACControl">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>空调控制</string>
+   </property>
+  <property name="styleSheet">
+   <string notr="true">
+    QWidget#ACControl {
+        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e8f4fd, stop:1 #f5f7fa);
+    }
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="topCard" native="true">
+     <property name="styleSheet">
+      <string notr="true">
+       QWidget#topCard {
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #4facfe, stop:1 #00f2fe);
+        border-bottom-left-radius: 24px;
+        border-bottom-right-radius: 24px;
+       }
+      </string>
+     </property>
+     <layout class="QVBoxLayout" name="topCardLayout">
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <property name="leftMargin">
+       <number>30</number>
+      </property>
+      <property name="topMargin">
+       <number>25</number>
+      </property>
+      <property name="rightMargin">
+       <number>30</number>
+      </property>
+      <property name="bottomMargin">
+       <number>30</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="deviceNameLabel">
+        <property name="styleSheet">
+         <string notr="true">color: rgba(255,255,255,0.85); font-size: 13px; background: transparent;</string>
+        </property>
+        <property name="text">
+         <string>空调</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="temperatureLabel">
+        <property name="styleSheet">
+         <string notr="true">font-size: 72px; font-weight: bold; color: #ffffff; background: transparent;</string>
+        </property>
+        <property name="text">
+         <string>26°</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="styleSheet">
+         <string notr="true">color: rgba(255,255,255,0.9); font-size: 14px; background: transparent;</string>
+        </property>
+        <property name="text">
+         <string>已关机</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="controlSection" native="true">
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
+     <layout class="QVBoxLayout" name="controlSectionLayout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <property name="leftMargin">
+       <number>30</number>
+      </property>
+      <property name="topMargin">
+       <number>24</number>
+      </property>
+      <property name="rightMargin">
+       <number>30</number>
+      </property>
+      <property name="bottomMargin">
+       <number>20</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="powerLayout">
+        <item>
+         <spacer name="powerSpacerLeft">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="powerButton">
+          <property name="text">
+           <string>开启</string>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">
+            QPushButton {
+                border-radius: 40px;
+                background-color: #c0c4cc;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border: 3px solid rgba(255,255,255,0.6);
+            }
+           </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="powerSpacerRight">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="tempControlLayout">
+        <item>
+         <widget class="QPushButton" name="temperatureDownButton">
+          <property name="text">
+           <string>−</string>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>56</width>
+            <height>56</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>56</width>
+            <height>56</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">
+            QPushButton {
+                border-radius: 28px;
+                background-color: #ffffff;
+                color: #4facfe;
+                font-size: 28px;
+                font-weight: bold;
+                border: 2px solid #e8f4fd;
+            }
+            QPushButton:hover {
+                background-color: #e8f4fd;
+                border: 2px solid #4facfe;
+            }
+            QPushButton:pressed {
+                background-color: #d0ecfb;
+            }
+            QPushButton:disabled {
+                color: #dcdfe6;
+                border-color: #f2f6fc;
+            }
+           </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="temperatureUpButton">
+          <property name="text">
+           <string>+</string>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>56</width>
+            <height>56</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>56</width>
+            <height>56</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">
+            QPushButton {
+                border-radius: 28px;
+                background-color: #ffffff;
+                color: #4facfe;
+                font-size: 28px;
+                font-weight: bold;
+                border: 2px solid #e8f4fd;
+            }
+            QPushButton:hover {
+                background-color: #e8f4fd;
+                border: 2px solid #4facfe;
+            }
+            QPushButton:pressed {
+                background-color: #d0ecfb;
+            }
+            QPushButton:disabled {
+                color: #dcdfe6;
+                border-color: #f2f6fc;
+            }
+           </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QWidget" name="settingsCard" native="true">
+        <property name="styleSheet">
+         <string notr="true">
+          QWidget#settingsCard {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e8f4fd;
+          }
+         </string>
+        </property>
+        <layout class="QVBoxLayout" name="settingsCardLayout">
+         <property name="spacing">
+          <number>12</number>
+         </property>
+         <property name="leftMargin">
+          <number>16</number>
+         </property>
+         <property name="topMargin">
+          <number>16</number>
+         </property>
+         <property name="rightMargin">
+          <number>16</number>
+         </property>
+         <property name="bottomMargin">
+          <number>16</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="fanLayout">
+           <item>
+            <widget class="QLabel" name="fanIconLabel">
+             <property name="styleSheet">
+              <string notr="true">color: #4facfe; font-size: 16px; background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>🌬</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="fanLabel">
+             <property name="styleSheet">
+              <string notr="true">color: #606266; font-size: 14px; font-weight: 500; background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>风速</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="fanSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QComboBox" name="fanSpeedComboBox">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+               QComboBox {
+                    background-color: #f0f9ff;
+                    border: 1px solid #d4ecfa;
+                    border-radius: 8px;
+                    padding: 4px 12px;
+                    font-size: 13px;
+                    color: #4facfe;
+                    font-weight: bold;
+               }
+               QComboBox::drop-down {
+                    border: none;
+                    width: 24px;
+               }
+               QComboBox QAbstractItemView {
+                    background-color: #ffffff;
+                    border: 1px solid #d4ecfa;
+                    selection-background-color: #e8f4fd;
+                    selection-color: #4facfe;
+                    outline: none;
+                    border-radius: 8px;
+               }
+              </string>
+             </property>
+             <item>
+              <property name="text">
+               <string>自动</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>低速</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>中速</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>高速</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line1">
+           <property name="styleSheet">
+            <string notr="true">color: #f0f9ff;</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="swingLayout">
+           <item>
+            <widget class="QCheckBox" name="verticalSwingCheckBox">
+             <property name="styleSheet">
+              <string notr="true">QCheckBox { color: #606266; font-size: 14px; spacing: 8px; background: transparent; } QCheckBox::indicator { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #dcdfe6; } QCheckBox::indicator:checked { background-color: #4facfe; border-color: #4facfe; }</string>
+             </property>
+             <property name="text">
+              <string>上下摆风</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="horizontalSwingCheckBox">
+             <property name="styleSheet">
+              <string notr="true">QCheckBox { color: #606266; font-size: 14px; spacing: 8px; background: transparent; } QCheckBox::indicator { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #dcdfe6; } QCheckBox::indicator:checked { background-color: #4facfe; border-color: #4facfe; }</string>
+             </property>
+             <property name="text">
+              <string>左右摆风</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line2">
+           <property name="styleSheet">
+            <string notr="true">color: #f0f9ff;</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="timerButton">
+           <property name="styleSheet">
+            <string notr="true">
+             QPushButton {
+                background-color: #f0f9ff;
+                color: #4facfe;
+                border: 1px solid #d4ecfa;
+                border-radius: 10px;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: bold;
+             }
+             QPushButton:hover {
+                background-color: #e8f4fd;
+                border: 1px solid #4facfe;
+             }
+             QPushButton:pressed {
+                background-color: #d0ecfb;
+             }
+            </string>
+           </property>
+           <property name="text">
+            <string>⏱ 定时预约</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

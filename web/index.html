@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeMind - 智能家居控制中心</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #00f2fe;
+            --dark: #2c3e50;
+            --light: #f5f7fa;
+            --white: #ffffff;
+            --gray: #909399;
+            --success: #67c23a;
+            --danger: #f56c6c;
+            --warning: #e6a23c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); }
+
+        /* ===== Login Page ===== */
+        .login-page {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        .login-box {
+            background: var(--white); border-radius: 20px; padding: 40px;
+            width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        .login-box h2 { text-align: center; margin-bottom: 30px; color: var(--dark); }
+        .login-box .input-group { margin-bottom: 20px; }
+        .login-box label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; }
+        .login-box input[type="text"], .login-box input[type="password"] {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #dcdfe6;
+            border-radius: 10px; font-size: 14px; transition: border-color 0.3s;
+        }
+        .login-box input:focus { outline: none; border-color: var(--primary); }
+        .login-box .btn-primary {
+            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; border: none; border-radius: 10px; font-size: 16px;
+            font-weight: 600; cursor: pointer; transition: opacity 0.3s;
+        }
+        .login-box .btn-primary:hover { opacity: 0.9; }
+        .login-box .toggle-link {
+            text-align: center; margin-top: 16px; color: var(--primary);
+            cursor: pointer; font-size: 14px;
+        }
+        .login-box .toggle-link:hover { text-decoration: underline; }
+        .login-box .error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; text-align: center; display: none; }
+
+        /* ===== App Layout ===== */
+        .app-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 260px; background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: var(--white); padding: 30px 20px; position: fixed; height: 100vh;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 100;
+        }
+        .sidebar h2 { font-size: 24px; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .nav-item {
+            padding: 15px; margin-bottom: 10px; border-radius: 10px; cursor: pointer;
+            transition: all 0.3s; display: flex; align-items: center; gap: 12px; font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.2); }
+        .main-content { margin-left: 260px; flex: 1; padding: 40px; }
+
+        /* Header */
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+        }
+        .page-header h1 { font-size: 24px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 500; transition: all 0.3s; display: inline-flex;
+            align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #3a9bf5; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #5daf34; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #e04848; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d4932e; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-outline {
+            background: transparent; border: 1.5px solid var(--primary); color: var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--white); padding: 25px; border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .stat-card i { font-size: 24px; color: var(--primary); }
+        .stat-card h3 { font-size: 14px; color: var(--gray); }
+        .stat-card p { font-size: 20px; font-weight: bold; }
+
+        /* Section */
+        .section { margin-bottom: 30px; }
+        .section-title {
+            margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .section-title h2 { font-size: 18px; }
+
+        /* Device Card */
+        .device-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+        }
+        .device-card {
+            background: var(--white); padding: 20px; border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            transition: transform 0.3s;
+        }
+        .device-card:hover { transform: translateY(-3px); }
+        .device-info h4 { font-size: 16px; margin-bottom: 5px; }
+        .device-info span { font-size: 12px; color: var(--gray); }
+        .device-actions { display: flex; align-items: center; gap: 10px; }
+
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Scene Card */
+        .scene-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
+        }
+        .scene-card {
+            background: var(--white); padding: 18px; border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        .scene-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .scene-name { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .scene-name i { color: var(--primary); }
+        .scene-actions { display: flex; gap: 6px; }
+
+        /* Room Card */
+        .room-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;
+        }
+        .room-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 30px; border-radius: 20px; cursor: pointer;
+            transition: transform 0.3s; position: relative;
+        }
+        .room-card:hover { transform: translateY(-5px); }
+        .room-card h3 { font-size: 20px; margin-bottom: 8px; }
+        .room-card .room-count { font-size: 13px; opacity: 0.8; }
+        .room-card .room-delete {
+            position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.2);
+            border: none; color: white; width: 28px; height: 28px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: background 0.3s;
+        }
+        .room-card .room-delete:hover { background: rgba(245,108,108,0.8); }
+
+        /* Task Card */
+        .task-grid { display: flex; flex-direction: column; gap: 12px; }
+        .task-card {
+            background: var(--white); padding: 18px 20px; border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 15px;
+        }
+        .task-card.completed .task-content span { text-decoration: line-through; color: var(--gray); }
+        .task-check { cursor: pointer; font-size: 20px; color: #dcdfe6; transition: color 0.3s; }
+        .task-check.checked { color: var(--success); }
+        .task-content { flex: 1; }
+        .task-content span { font-size: 14px; }
+        .task-meta { font-size: 12px; color: var(--gray); margin-top: 4px; }
+        .task-actions { display: flex; gap: 6px; }
+
+        /* Settings */
+        .settings-section {
+            background: var(--white); padding: 30px; border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        .settings-section h3 { margin-bottom: 20px; font-size: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 14px; border: 1.5px solid #dcdfe6;
+            border-radius: 8px; font-size: 14px; transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+
+        /* User List */
+        .user-list { display: flex; flex-direction: column; gap: 10px; }
+        .user-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; background: var(--light); border-radius: 10px;
+        }
+        .user-item .user-name { font-weight: 500; }
+        .user-item .user-role { font-size: 12px; color: var(--primary); background: rgba(79,172,254,0.1); padding: 2px 8px; border-radius: 4px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); display: none; justify-content: center;
+            align-items: center; z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--white); border-radius: 20px; padding: 30px;
+            width: 450px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal h3 { margin-bottom: 20px; font-size: 18px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        /* Temperature Control */
+        .temp-control {
+            display: flex; align-items: center; gap: 8px; margin-top: 6px;
+        }
+        .temp-control input[type="range"] {
+            width: 100px; accent-color: var(--primary);
+        }
+        .temp-value { font-size: 13px; font-weight: 600; color: var(--primary); min-width: 40px; }
+
+        /* Scene Device Editor */
+        .scene-device-list { max-height: 400px; overflow-y: auto; }
+        .scene-device-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px; border-bottom: 1px solid #eee;
+        }
+        .scene-device-item:last-child { border-bottom: none; }
+        .scene-device-item .device-label { font-size: 14px; }
+        .scene-device-item .device-state { display: flex; align-items: center; gap: 8px; }
+        .scene-device-item select, .scene-device-item input {
+            padding: 6px 10px; border: 1px solid #dcdfe6; border-radius: 6px; font-size: 13px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 20px; right: 20px; padding: 14px 24px;
+            border-radius: 10px; color: white; font-size: 14px; font-weight: 500;
+            z-index: 2000; transform: translateX(120%); transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+
+        /* Confirm Dialog */
+        .confirm-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); display: none; justify-content: center;
+            align-items: center; z-index: 1100;
+        }
+        .confirm-overlay.show { display: flex; }
+        .confirm-box {
+            background: var(--white); border-radius: 16px; padding: 30px;
+            width: 360px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .confirm-box p { margin-bottom: 20px; font-size: 15px; }
+        .confirm-box .confirm-actions { display: flex; justify-content: center; gap: 12px; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center; padding: 40px; color: var(--gray);
+        }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+        .empty-state p { font-size: 15px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; padding: 20px 10px; }
+            .sidebar h2 span, .nav-item span { display: none; }
+            .sidebar h2 { justify-content: center; }
+            .nav-item { justify-content: center; padding: 15px 0; }
+            .main-content { margin-left: 80px; padding: 20px; }
+            .device-grid { grid-template-columns: 1fr; }
+            .room-grid { grid-template-columns: 1fr; }
+            .scene-grid { grid-template-columns: 1fr; }
+            .modal { width: 95vw; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="login-page">
+        <div class="login-box">
+            <h2><i class="fas fa-home"></i> HomeMind</h2>
+            <div id="login-form">
+                <div class="input-group">
+                    <label>用户名</label>
+                    <input type="text" id="login-username" placeholder="请输入用户名">
+                </div>
+                <div class="input-group">
+                    <label>密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码">
+                </div>
+                <div id="login-error" class="error-msg"></div>
+                <button class="btn-primary" onclick="doLogin()">登 录</button>
+                <div class="toggle-link" onclick="showRegister()">没有账号？立即注册</div>
+            </div>
+            <div id="register-form" style="display:none;">
+                <div class="input-group">
+                    <label>用户名</label>
+                    <input type="text" id="reg-username" placeholder="请输入用户名">
+                </div>
+                <div class="input-group">
+                    <label>密码</label>
+                    <input type="password" id="reg-password" placeholder="请输入密码">
+                </div>
+                <div class="input-group">
+                    <label>确认密码</label>
+                    <input type="password" id="reg-confirm" placeholder="请再次输入密码">
+                </div>
+                <div id="reg-error" class="error-msg"></div>
+                <button class="btn-primary" onclick="doRegister()">注 册</button>
+                <div class="toggle-link" onclick="showLogin()">已有账号？返回登录</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Layout -->
+    <div id="app-layout" class="app-layout" style="display:none;">
+        <div class="sidebar">
+            <h2><i class="fas fa-home"></i> <span>HomeMind</span></h2>
+            <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>仪表盘</span></div>
+            <div class="nav-item" data-page="rooms"><i class="fas fa-door-open"></i> <span>房间</span></div>
+            <div class="nav-item" data-page="devices"><i class="fas fa-microchip"></i> <span>设备控制</span></div>
+            <div class="nav-item" data-page="scenes"><i class="fas fa-magic"></i> <span>情景模式</span></div>
+            <div class="nav-item" data-page="tasks"><i class="fas fa-tasks"></i> <span>自动化任务</span></div>
+            <div class="nav-item" data-page="settings"><i class="fas fa-cog"></i> <span>设置</span></div>
+        </div>
+
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="page-dashboard" class="page">
+                <div class="page-header">
+                    <div>
+                        <h1>欢迎回来, <span id="username-display">-</span></h1>
+                        <p id="date-time" style="color:var(--gray);font-size:14px;margin-top:4px;"></p>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn btn-primary" onclick="refreshAll()"><i class="fas fa-sync"></i> 刷新</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><i class="fas fa-cloud-sun"></i><h3>当前天气</h3><p id="weather-val">--</p></div>
+                    <div class="stat-card"><i class="fas fa-thermometer-half"></i><h3>室外温度</h3><p id="outdoor-temp">--°C</p></div>
+                    <div class="stat-card"><i class="fas fa-home"></i><h3>室内温度</h3><p id="indoor-temp">--°C</p></div>
+                    <div class="stat-card"><i class="fas fa-lightbulb"></i><h3>在线设备</h3><p id="device-count">0</p></div>
+                </div>
+                <div class="section">
+                    <div class="section-title"><h2>情景模式</h2></div>
+                    <div class="scene-grid" id="dash-scenes"></div>
+                </div>
+                <div class="section">
+                    <div class="section-title"><h2>所有设备</h2></div>
+                    <div class="device-grid" id="dash-devices"></div>
+                </div>
+            </div>
+
+            <!-- Rooms Page -->
+            <div id="page-rooms" class="page" style="display:none;">
+                <div class="page-header">
+                    <h1>房间管理</h1>
+                    <button class="btn btn-primary" onclick="showAddRoomModal()"><i class="fas fa-plus"></i> 添加房间</button>
+                </div>
+                <div class="room-grid" id="room-list"></div>
+            </div>
+
+            <!-- Devices Page -->
+            <div id="page-devices" class="page" style="display:none;">
+                <div class="page-header">
+                    <h1>设备控制</h1>
+                    <button class="btn btn-primary" onclick="showAddDeviceModal()"><i class="fas fa-plus"></i> 添加设备</button>
+                </div>
+                <div id="device-list-by-room"></div>
+            </div>
+
+            <!-- Scenes Page -->
+            <div id="page-scenes" class="page" style="display:none;">
+                <div class="page-header">
+                    <h1>情景模式</h1>
+                    <button class="btn btn-primary" onclick="showAddSceneModal()"><i class="fas fa-plus"></i> 添加情景</button>
+                </div>
+                <div class="scene-grid" id="scene-list"></div>
+            </div>
+
+            <!-- Tasks Page -->
+            <div id="page-tasks" class="page" style="display:none;">
+                <div class="page-header">
+                    <h1>自动化任务</h1>
+                    <button class="btn btn-primary" onclick="showTaskModal()"><i class="fas fa-plus"></i> 添加任务</button>
+                </div>
+                <div class="task-grid" id="task-list"></div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="page-settings" class="page" style="display:none;">
+                <div class="page-header"><h1>设置</h1></div>
+                <div class="settings-section">
+                    <h3><i class="fas fa-key"></i> 修改密码</h3>
+                    <div class="form-group">
+                        <label>旧密码</label>
+                        <input type="password" id="old-password" placeholder="请输入旧密码">
+                    </div>
+                    <div class="form-group">
+                        <label>新密码</label>
+                        <input type="password" id="new-password" placeholder="请输入新密码">
+                    </div>
+                    <div class="form-group">
+                        <label>确认新密码</label>
+                        <input type="password" id="confirm-password" placeholder="请再次输入新密码">
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">修改密码</button>
+                </div>
+                <div id="admin-section" class="settings-section" style="display:none;">
+                    <h3><i class="fas fa-users-cog"></i> 用户管理</h3>
+                    <div id="user-list" class="user-list"></div>
+                </div>
+                <div class="settings-section">
+                    <button class="btn btn-danger" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Template -->
+    <div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirm-overlay" class="confirm-overlay">
+        <div class="confirm-box">
+            <p id="confirm-msg"></p>
+            <div class="confirm-actions">
+                <button class="btn btn-outline" onclick="closeConfirm()">取消</button>
+                <button class="btn btn-danger" id="confirm-ok">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+    // ===== API =====
+    let API_BASE;
+    let AUTH_TOKEN = localStorage.getItem('hm_token');
+    let CURRENT_USER = localStorage.getItem('hm_user');
+    let IS_ADMIN = localStorage.getItem('hm_admin') === 'true';
+
+    function initAPI() {
+        let origin = window.location.origin;
+        if (origin === 'null' || origin.startsWith('file')) origin = 'http://localhost:8080';
+        API_BASE = origin + '/api';
+    }
+
+    async function api(path, options = {}) {
+        const headers = { 'Content-Type': 'application/json', ...options.headers };
+        if (AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+        const res = await fetch(API_BASE + path, { ...options, headers });
+        const data = await res.json();
+        if (!data.success && data.error === '未登录或登录已过期') {
+            AUTH_TOKEN = null; localStorage.removeItem('hm_token');
+            showLoginPage();
+            throw new Error('Session expired');
+        }
+        return data;
+    }
+
+    // ===== Toast =====
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast ' + type + ' show';
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ===== Confirm =====
+    let confirmCallback = null;
+    function showConfirm(msg, onConfirm) {
+        document.getElementById('confirm-msg').textContent = msg;
+        document.getElementById('confirm-overlay').classList.add('show');
+        confirmCallback = onConfirm;
+        document.getElementById('confirm-ok').onclick = () => { closeConfirm(); if (confirmCallback) confirmCallback(); };
+    }
+    function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); }
+
+    // ===== Modal =====
+    function showModal(html) {
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+
+    // ===== Auth =====
+    function showLoginPage() {
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('app-layout').style.display = 'none';
+    }
+    function showApp() {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('app-layout').style.display = 'flex';
+        navigateTo('dashboard');
+        refreshAll();
+    }
+    function showLogin() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('register-form').style.display = 'none';
+    }
+    function showRegister() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+    }
+
+    async function doLogin() {
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errEl = document.getElementById('login-error');
+        if (!username || !password) { errEl.textContent = '请输入用户名和密码'; errEl.style.display = 'block'; return; }
+        try {
+            const data = await api('/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+            if (data.success) {
+                AUTH_TOKEN = data.token;
+                CURRENT_USER = data.username;
+                IS_ADMIN = data.is_admin;
+                localStorage.setItem('hm_token', AUTH_TOKEN);
+                localStorage.setItem('hm_user', CURRENT_USER);
+                localStorage.setItem('hm_admin', IS_ADMIN);
+                showApp();
+            } else {
+                errEl.textContent = data.error || '登录失败';
+                errEl.style.display = 'block';
+            }
+        } catch (e) { errEl.textContent = '网络错误'; errEl.style.display = 'block'; }
+    }
+
+    async function doRegister() {
+        const username = document.getElementById('reg-username').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const confirm = document.getElementById('reg-confirm').value;
+        const errEl = document.getElementById('reg-error');
+        if (!username || !password) { errEl.textContent = '请输入用户名和密码'; errEl.style.display = 'block'; return; }
+        if (password !== confirm) { errEl.textContent = '两次密码不一致'; errEl.style.display = 'block'; return; }
+        try {
+            const data = await api('/register', { method: 'POST', body: JSON.stringify({ username, password }) });
+            if (data.success) {
+                showToast('注册成功，请登录');
+                showLogin();
+            } else {
+                errEl.textContent = data.error || '注册失败';
+                errEl.style.display = 'block';
+            }
+        } catch (e) { errEl.textContent = '网络错误'; errEl.style.display = 'block'; }
+    }
+
+    async function doLogout() {
+        try { await api('/logout', { method: 'POST' }); } catch (e) {}
+        AUTH_TOKEN = null; CURRENT_USER = null; IS_ADMIN = false;
+        localStorage.removeItem('hm_token');
+        localStorage.removeItem('hm_user');
+        localStorage.removeItem('hm_admin');
+        showLoginPage();
+    }
+
+    async function changePassword() {
+        const oldP = document.getElementById('old-password').value;
+        const newP = document.getElementById('new-password').value;
+        const confirmP = document.getElementById('confirm-password').value;
+        if (!oldP || !newP) { showToast('请填写所有密码字段', 'error'); return; }
+        if (newP !== confirmP) { showToast('两次新密码不一致', 'error'); return; }
+        const data = await api('/change_password', { method: 'POST', body: JSON.stringify({ old_password: oldP, new_password: newP }) });
+        if (data.success) {
+            showToast('密码修改成功');
+            document.getElementById('old-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+        } else {
+            showToast(data.error || '修改失败', 'error');
+        }
+    }
+
+    // ===== Navigation =====
+    function navigateTo(page) {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + page).style.display = 'block';
+        document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+        loadPageData(page);
+    }
+
+    document.addEventListener('click', e => {
+        const nav = e.target.closest('.nav-item');
+        if (nav && nav.dataset.page) navigateTo(nav.dataset.page);
+    });
+
+    async function loadPageData(page) {
+        switch (page) {
+            case 'dashboard': await Promise.all([fetchStatus(), fetchDashScenes(), fetchDashDevices()]); break;
+            case 'rooms': await fetchRooms(); break;
+            case 'devices': await fetchDevicesByRoom(); break;
+            case 'scenes': await fetchScenes(); break;
+            case 'tasks': await fetchTasks(); break;
+            case 'settings': await fetchUsers(); break;
+        }
+    }
+
+    function refreshAll() {
+        const activePage = document.querySelector('.nav-item.active');
+        if (activePage) loadPageData(activePage.dataset.page);
+    }
+
+    // ===== Dashboard =====
+    async function fetchStatus() {
+        try {
+            const data = await api('/status');
+            document.getElementById('username-display').textContent = data.user || '-';
+            document.getElementById('weather-val').textContent = data.weather || '--';
+            document.getElementById('outdoor-temp').textContent = (data.outdoor_temp || '--') + '°C';
+            let indoor = (data.indoor_temp || '--') + '°C';
+            if (data.indoor_hum && data.indoor_hum !== '--') indoor += ' / ' + data.indoor_hum + '%';
+            document.getElementById('indoor-temp').textContent = indoor;
+        } catch (e) {}
+    }
+
+    async function fetchDashScenes() {
+        try {
+            const data = await api('/scenes');
+            const container = document.getElementById('dash-scenes');
+            if (!data.scenes || data.scenes.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-magic"></i><p>暂无情景模式</p></div>';
+                return;
+            }
+            const iconMap = { '睡眠': 'fa-moon', '日常': 'fa-sun', '会客': 'fa-users', '影院': 'fa-film' };
+            container.innerHTML = data.scenes.map(name => `
+                <div class="scene-card">
+                    <div class="scene-name"><i class="fas ${iconMap[name] || 'fa-play-circle'}"></i> ${name}</div>
+                    <button class="btn btn-sm btn-primary" onclick="applyScene('${name}')">应用</button>
+                </div>
+            `).join('');
+        } catch (e) {}
+    }
+
+    async function fetchDashDevices() {
+        try {
+            const data = await api('/devices');
+            const container = document.getElementById('dash-devices');
+            document.getElementById('device-count').textContent = data.devices.length;
+            if (data.devices.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-microchip"></i><p>暂无设备</p></div>';
+                return;
+            }
+            container.innerHTML = data.devices.map(d => {
+                const isOn = d.state.startsWith('开启') || d.state.startsWith('打开') || d.state === 'On';
+                let extra = '';
+                if (d.type === '空调' && isOn) {
+                    const tempMatch = d.state.match(/(\d+)°C/);
+                    const temp = tempMatch ? parseInt(tempMatch[1]) : 26;
+                    extra = `<div class="temp-control">
+                        <input type="range" min="16" max="30" value="${temp}" onchange="setACTemp('${d.room}','${d.name}',this.value)" style="width:80px;">
+                        <span class="temp-value">${temp}°C</span>
+                    </div>`;
+                }
+                return `<div class="device-card">
+                    <div class="device-info">
+                        <h4>${d.name}</h4>
+                        <span>${d.room} | ${d.type} | ${d.state}</span>
+                        ${extra}
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" ${isOn ? 'checked' : ''} onchange="controlDevice('${d.room}','${d.name}','${d.type}',this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>`;
+            }).join('');
+        } catch (e) {}
+    }
+
+    async function controlDevice(room, name, type, isOn) {
+        let state;
+        if (type === '空调' && isOn) state = '开启, 26°C';
+        else if (type === '空调' && !isOn) state = '关闭';
+        else state = isOn ? '开启' : '关闭';
+        await api('/control', { method: 'POST', body: JSON.stringify({ room, name, state }) });
+        setTimeout(refreshAll, 300);
+    }
+
+    async function setACTemp(room, name, temp) {
+        await api('/control', { method: 'POST', body: JSON.stringify({ room, name, state: `开启, ${temp}°C` }) });
+        setTimeout(refreshAll, 300);
+    }
+
+    async function applyScene(name) {
+        const data = await api('/apply_scene', { method: 'POST', body: JSON.stringify({ name }) });
+        if (data.success) { showToast(`情景"${name}"已应用`); setTimeout(refreshAll, 300); }
+        else showToast(data.error || '应用失败', 'error');
+    }
+
+    // ===== Rooms =====
+    async function fetchRooms() {
+        const data = await api('/rooms');
+        const deviceData = await api('/devices');
+        const container = document.getElementById('room-list');
+        const rooms = data.rooms || [];
+        if (rooms.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-door-open"></i><p>暂无房间，点击右上角添加</p></div>';
+            return;
+        }
+        const deviceCount = {};
+        (deviceData.devices || []).forEach(d => { deviceCount[d.room] = (deviceCount[d.room] || 0) + 1; });
+        const colors = ['#4facfe,#00f2fe', '#f093fb,#f5576c', '#4facfe,#43e97b', '#fa709a,#fee140', '#a18cd1,#fbc2eb', '#fccb90,#d57eeb'];
+        container.innerHTML = rooms.map((name, i) => `
+            <div class="room-card" style="background:linear-gradient(135deg,${colors[i % colors.length]});" onclick="navigateTo('devices')">
+                <button class="room-delete" onclick="event.stopPropagation();deleteRoom('${name}')"><i class="fas fa-times"></i></button>
+                <h3>${name}</h3>
+                <div class="room-count">${deviceCount[name] || 0} 个设备</div>
+            </div>
+        `).join('');
+    }
+
+    function showAddRoomModal() {
+        showModal(`
+            <h3>添加房间</h3>
+            <div class="form-group">
+                <label>房间名称</label>
+                <input type="text" id="new-room-name" placeholder="例如：客厅">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="createRoom()">确定</button>
+            </div>
+        `);
+    }
+
+    async function createRoom() {
+        const name = document.getElementById('new-room-name').value.trim();
+        if (!name) { showToast('请输入房间名称', 'error'); return; }
+        const data = await api('/rooms/create', { method: 'POST', body: JSON.stringify({ name }) });
+        if (data.success) { showToast('房间创建成功'); closeModal(); fetchRooms(); }
+        else showToast(data.error || '创建失败', 'error');
+    }
+
+    function deleteRoom(name) {
+        showConfirm(`确定删除房间"${name}"吗？房间内的设备也将被删除。`, async () => {
+            const data = await api('/rooms/delete', { method: 'POST', body: JSON.stringify({ name }) });
+            if (data.success) { showToast('删除成功'); fetchRooms(); }
+            else showToast(data.error || '删除失败', 'error');
+        });
+    }
+
+    // ===== Devices =====
+    async function fetchDevicesByRoom() {
+        const data = await api('/devices');
+        const container = document.getElementById('device-list-by-room');
+        const devices = data.devices || [];
+        if (devices.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-microchip"></i><p>暂无设备，点击右上角添加</p></div>';
+            return;
+        }
+        const byRoom = {};
+        devices.forEach(d => { if (!byRoom[d.room]) byRoom[d.room] = []; byRoom[d.room].push(d); });
+        container.innerHTML = Object.entries(byRoom).map(([room, devs]) => `
+            <div class="section">
+                <div class="section-title"><h2>${room}</h2></div>
+                <div class="device-grid">
+                    ${devs.map(d => {
+                        const isOn = d.state.startsWith('开启') || d.state.startsWith('打开') || d.state === 'On';
+                        let extra = '';
+                        if (d.type === '空调' && isOn) {
+                            const tempMatch = d.state.match(/(\d+)°C/);
+                            const temp = tempMatch ? parseInt(tempMatch[1]) : 26;
+                            extra = `<div class="temp-control">
+                                <input type="range" min="16" max="30" value="${temp}" onchange="setACTemp('${d.room}','${d.name}',this.value)">
+                                <span class="temp-value">${temp}°C</span>
+                            </div>`;
+                        }
+                        if (d.type === '空调' && !isOn) {
+                            extra = `<div class="temp-control">
+                                <input type="range" min="16" max="30" value="26" disabled style="opacity:0.4">
+                                <span class="temp-value" style="opacity:0.4">26°C</span>
+                            </div>`;
+                        }
+                        return `<div class="device-card">
+                            <div class="device-info">
+                                <h4>${d.name}</h4>
+                                <span>${d.type}${d.brand ? ' | ' + d.brand : ''} | ${d.state}</span>
+                                ${extra}
+                            </div>
+                            <div class="device-actions">
+                                <label class="switch">
+                                    <input type="checkbox" ${isOn ? 'checked' : ''} onchange="controlDevice('${d.room}','${d.name}','${d.type}',this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <button class="btn btn-sm btn-danger" onclick="deleteDevice('${d.room}','${d.name}','${d.type}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function showAddDeviceModal() {
+        const roomData = await api('/rooms');
+        const rooms = roomData.rooms || [];
+        if (rooms.length === 0) { showToast('请先创建房间', 'error'); return; }
+        const types = ['空调', '灯光', '传感器', '监控'];
+        showModal(`
+            <h3>添加设备</h3>
+            <div class="form-group">
+                <label>选择房间</label>
+                <select id="new-device-room">${rooms.map(r => `<option value="${r}">${r}</option>`).join('')}</select>
+            </div>
+            <div class="form-group">
+                <label>设备名称</label>
+                <input type="text" id="new-device-name" placeholder="例如：客厅空调">
+            </div>
+            <div class="form-group">
+                <label>设备类型</label>
+                <select id="new-device-type">${types.map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+            </div>
+            <div class="form-group">
+                <label>品牌 (可选)</label>
+                <input type="text" id="new-device-brand" placeholder="例如：格力">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="createDevice()">确定</button>
+            </div>
+        `);
+    }
+
+    async function createDevice() {
+        const room = document.getElementById('new-device-room').value;
+        const name = document.getElementById('new-device-name').value.trim();
+        const type = document.getElementById('new-device-type').value;
+        const brand = document.getElementById('new-device-brand').value.trim();
+        if (!name) { showToast('请输入设备名称', 'error'); return; }
+        const data = await api('/devices/create', { method: 'POST', body: JSON.stringify({ room, name, type, brand }) });
+        if (data.success) { showToast('设备添加成功'); closeModal(); fetchDevicesByRoom(); }
+        else showToast(data.error || '添加失败', 'error');
+    }
+
+    function deleteDevice(room, name, type) {
+        showConfirm(`确定删除设备"${name}"吗？`, async () => {
+            const data = await api('/devices/delete', { method: 'POST', body: JSON.stringify({ room, name, type }) });
+            if (data.success) { showToast('删除成功'); fetchDevicesByRoom(); }
+            else showToast(data.error || '删除失败', 'error');
+        });
+    }
+
+    // ===== Scenes =====
+    async function fetchScenes() {
+        const data = await api('/scenes');
+        const container = document.getElementById('scene-list');
+        const scenes = data.scenes || [];
+        if (scenes.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-magic"></i><p>暂无情景模式，点击右上角添加</p></div>';
+            return;
+        }
+        const iconMap = { '睡眠': 'fa-moon', '日常': 'fa-sun', '会客': 'fa-users', '影院': 'fa-film' };
+        container.innerHTML = scenes.map(name => `
+            <div class="scene-card">
+                <div class="scene-name"><i class="fas ${iconMap[name] || 'fa-play-circle'}"></i> ${name}</div>
+                <div class="scene-actions">
+                    <button class="btn btn-sm btn-primary" onclick="applyScene('${name}')">应用</button>
+                    <button class="btn btn-sm btn-warning" onclick="editScene('${name}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteScene('${name}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showAddSceneModal() {
+        showModal(`
+            <h3>添加情景</h3>
+            <div class="form-group">
+                <label>情景名称</label>
+                <input type="text" id="new-scene-name" placeholder="例如：睡眠模式">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="createScene()">确定</button>
+            </div>
+        `);
+    }
+
+    async function createScene() {
+        const name = document.getElementById('new-scene-name').value.trim();
+        if (!name) { showToast('请输入情景名称', 'error'); return; }
+        const data = await api('/scenes/create', { method: 'POST', body: JSON.stringify({ name }) });
+        if (data.success) { showToast('情景创建成功'); closeModal(); fetchScenes(); }
+        else showToast(data.error || '创建失败', 'error');
+    }
+
+    function deleteScene(name) {
+        showConfirm(`确定删除情景"${name}"吗？`, async () => {
+            const data = await api('/scenes/delete', { method: 'POST', body: JSON.stringify({ name }) });
+            if (data.success) { showToast('删除成功'); fetchScenes(); }
+            else showToast(data.error || '删除失败', 'error');
+        });
+    }
+
+    async function editScene(sceneName) {
+        const [sceneData, deviceData] = await Promise.all([
+            api('/scenes/devices?name=' + encodeURIComponent(sceneName)),
+            api('/devices')
+        ]);
+        const allDevices = (deviceData.devices || []).filter(d => d.type !== '传感器');
+        const sceneDevices = sceneData.devices || [];
+
+        const deviceRows = allDevices.map(d => {
+            const existing = sceneDevices.find(sd => sd.device_name === d.name && sd.room_name === d.room);
+            const state = existing ? existing.state : '未设置';
+            let stateEditor = '';
+            if (d.type === '空调') {
+                const isOn = state.startsWith('开启');
+                const tempMatch = state.match(/(\d+)°C/);
+                const temp = tempMatch ? parseInt(tempMatch[1]) : 26;
+                stateEditor = `<select class="scene-ac-power" data-name="${d.name}" data-room="${d.room}" data-type="${d.type}">
+                    <option value="关闭" ${!isOn ? 'selected' : ''}>关闭</option>
+                    <option value="开启" ${isOn ? 'selected' : ''}>开启</option>
+                </select>
+                <input type="number" class="scene-ac-temp" data-name="${d.name}" data-room="${d.room}" min="16" max="30" value="${temp}" style="width:60px;"> °C`;
+            } else if (d.type === '灯光') {
+                const isOn = state === '开启' || state === '打开';
+                stateEditor = `<select class="scene-light-state" data-name="${d.name}" data-room="${d.room}" data-type="${d.type}">
+                    <option value="关闭" ${!isOn ? 'selected' : ''}>关闭</option>
+                    <option value="开启" ${isOn ? 'selected' : ''}>开启</option>
+                </select>`;
+            } else {
+                stateEditor = `<input type="text" class="scene-other-state" data-name="${d.name}" data-room="${d.room}" data-type="${d.type}" value="${state === '未设置' ? '' : state}" placeholder="输入状态">`;
+            }
+            return `<div class="scene-device-item">
+                <div class="device-label"><strong>${d.name}</strong> <span style="color:var(--gray);font-size:12px;">(${d.room} | ${d.type})</span></div>
+                <div class="device-state">${stateEditor}</div>
+            </div>`;
+        }).join('');
+
+        showModal(`
+            <h3>编辑情景: ${sceneName}</h3>
+            <p style="color:var(--gray);font-size:13px;margin-bottom:16px;">设置每个设备在应用此情景时的目标状态</p>
+            <div class="scene-device-list">${deviceRows || '<p style="color:var(--gray);text-align:center;">暂无设备</p>'}</div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-success" onclick="saveSceneDevices('${sceneName}')">保存</button>
+            </div>
+        `);
+    }
+
+    async function saveSceneDevices(sceneName) {
+        const devices = [];
+        // AC devices
+        document.querySelectorAll('.scene-ac-power').forEach(sel => {
+            const name = sel.dataset.name, room = sel.dataset.room, type = sel.dataset.type;
+            const power = sel.value;
+            const tempInput = document.querySelector(`.scene-ac-temp[data-name="${name}"][data-room="${room}"]`);
+            const temp = tempInput ? tempInput.value : 26;
+            devices.push({ device_name: name, device_type: type, room_name: room, state: power === '开启' ? `开启, ${temp}°C` : '关闭' });
+        });
+        // Light devices
+        document.querySelectorAll('.scene-light-state').forEach(sel => {
+            devices.push({ device_name: sel.dataset.name, device_type: sel.dataset.type, room_name: sel.dataset.room, state: sel.value });
+        });
+        // Other devices
+        document.querySelectorAll('.scene-other-state').forEach(inp => {
+            if (inp.value.trim()) {
+                devices.push({ device_name: inp.dataset.name, device_type: inp.dataset.type, room_name: inp.dataset.room, state: inp.value.trim() });
+            }
+        });
+
+        const data = await api('/scenes/devices/save', { method: 'POST', body: JSON.stringify({ scene_name: sceneName, devices }) });
+        if (data.success) { showToast('情景配置已保存'); closeModal(); }
+        else showToast(data.error || '保存失败', 'error');
+    }
+
+    // ===== Tasks =====
+    async function fetchTasks() {
+        const data = await api('/tasks');
+        const container = document.getElementById('task-list');
+        const tasks = data.tasks || [];
+        if (tasks.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-tasks"></i><p>暂无自动化任务，点击右上角添加</p></div>';
+            return;
+        }
+        container.innerHTML = tasks.map(t => `
+            <div class="task-card ${t.completed ? 'completed' : ''}">
+                <i class="far ${t.completed ? 'fa-check-circle' : 'fa-circle'} task-check ${t.completed ? 'checked' : ''}" onclick="toggleTask(${t.id}, ${!t.completed})"></i>
+                <div class="task-content">
+                    <span>${t.content}</span>
+                    <div class="task-meta">${t.trigger_type}: ${t.trigger_value} | ${t.action_type}: ${t.action_target} ${t.action_value}</div>
+                </div>
+                <div class="task-actions">
+                    <button class="btn btn-sm btn-warning" onclick='editTask(${JSON.stringify(t).replace(/'/g, "\\'")})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function toggleTask(id, completed) {
+        await api('/tasks/update', { method: 'POST', body: JSON.stringify({ id, trigger_type: '', trigger_value: '', action_type: '', action_target: '', action_value: '', completed }) });
+        fetchTasks();
+    }
+
+    function deleteTask(id) {
+        showConfirm('确定删除此任务吗？', async () => {
+            const data = await api('/tasks/delete', { method: 'POST', body: JSON.stringify({ id }) });
+            if (data.success) { showToast('删除成功'); fetchTasks(); }
+            else showToast(data.error || '删除失败', 'error');
+        });
+    }
+
+    async function showTaskModal(existing = null) {
+        const [sceneData, deviceData] = await Promise.all([api('/scenes'), api('/devices')]);
+        const scenes = sceneData.scenes || [];
+        const devices = (deviceData.devices || []).map(d => `${d.name} (${d.room})`);
+
+        const triggerType = existing ? existing.trigger_type : '时间';
+        const triggerValue = existing ? existing.trigger_value : '';
+        const actionType = existing ? existing.action_type : '应用场景';
+        const actionTarget = existing ? existing.action_target : '';
+        const actionValue = existing ? existing.action_value : '';
+
+        showModal(`
+            <h3>${existing ? '修改' : '添加'}自动化任务</h3>
+            <div style="background:var(--light);padding:16px;border-radius:12px;margin-bottom:16px;">
+                <h4 style="margin-bottom:12px;font-size:14px;">1. 触发条件</h4>
+                <div class="form-group">
+                    <label>条件类型</label>
+                    <select id="task-trigger-type" onchange="updateTaskTriggerUI()">
+                        <option value="时间" ${triggerType === '时间' ? 'selected' : ''}>时间</option>
+                        <option value="室内温度" ${triggerType === '室内温度' ? 'selected' : ''}>室内温度</option>
+                        <option value="室外温度" ${triggerType === '室外温度' ? 'selected' : ''}>室外温度</option>
+                    </select>
+                </div>
+                <div class="form-group" id="task-time-group" style="display:${triggerType === '时间' ? 'block' : 'none'}">
+                    <label>选择时间</label>
+                    <input type="time" id="task-time-value" value="${triggerType === '时间' ? triggerValue : '08:00'}">
+                </div>
+                <div class="form-group" id="task-temp-group" style="display:${triggerType !== '时间' ? 'block' : 'none'}">
+                    <label>温度条件 (例如: >26 或 &lt;18)</label>
+                    <input type="text" id="task-temp-value" value="${triggerType !== '时间' ? triggerValue : ''}" placeholder=">26">
+                </div>
+            </div>
+            <div style="background:var(--light);padding:16px;border-radius:12px;">
+                <h4 style="margin-bottom:12px;font-size:14px;">2. 执行动作</h4>
+                <div class="form-group">
+                    <label>动作类型</label>
+                    <select id="task-action-type" onchange="updateTaskTargets()">
+                        <option value="应用场景" ${actionType === '应用场景' ? 'selected' : ''}>应用场景</option>
+                        <option value="控制设备" ${actionType === '控制设备' ? 'selected' : ''}>控制设备</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>目标对象</label>
+                    <select id="task-action-target"></select>
+                </div>
+                <div class="form-group">
+                    <label>执行细节</label>
+                    <input type="text" id="task-action-value" value="${actionValue}" placeholder="例如: 打开, 26°C">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveTask(${existing ? existing.id : 'null'})">${existing ? '保存' : '添加'}</button>
+            </div>
+        `);
+
+        // Store data for dropdown population
+        window._taskScenes = scenes;
+        window._taskDevices = devices;
+        window._taskActionTarget = actionTarget;
+        updateTaskTargets();
+    }
+
+    function updateTaskTriggerUI() {
+        const type = document.getElementById('task-trigger-type').value;
+        document.getElementById('task-time-group').style.display = type === '时间' ? 'block' : 'none';
+        document.getElementById('task-temp-group').style.display = type !== '时间' ? 'block' : 'none';
+    }
+
+    function updateTaskTargets() {
+        const type = document.getElementById('task-action-type').value;
+        const select = document.getElementById('task-action-target');
+        const items = type === '应用场景' ? window._taskScenes : window._taskDevices;
+        select.innerHTML = items.map(item => `<option value="${item}" ${item === window._taskActionTarget ? 'selected' : ''}>${item}</option>`).join('');
+    }
+
+    async function saveTask(id) {
+        const triggerType = document.getElementById('task-trigger-type').value;
+        const triggerValue = triggerType === '时间' ? document.getElementById('task-time-value').value : document.getElementById('task-temp-value').value.trim();
+        const actionType = document.getElementById('task-action-type').value;
+        const actionTarget = document.getElementById('task-action-target').value;
+        const actionValue = document.getElementById('task-action-value').value.trim();
+
+        if (!triggerValue) { showToast('请填写触发条件', 'error'); return; }
+        if (!actionTarget) { showToast('请选择目标对象', 'error'); return; }
+
+        const body = { trigger_type: triggerType, trigger_value: triggerValue, action_type: actionType, action_target: actionTarget, action_value: actionValue };
+        if (id) body.id = id;
+
+        const endpoint = id ? '/tasks/update' : '/tasks/create';
+        const data = await api(endpoint, { method: 'POST', body: JSON.stringify(body) });
+        if (data.success) { showToast(id ? '任务已更新' : '任务已添加'); closeModal(); fetchTasks(); }
+        else showToast(data.error || '操作失败', 'error');
+    }
+
+    function editTask(task) {
+        showTaskModal(task);
+    }
+
+    // ===== Settings / Users =====
+    async function fetchUsers() {
+        document.getElementById('admin-section').style.display = IS_ADMIN ? 'block' : 'none';
+        if (!IS_ADMIN) return;
+        const data = await api('/users');
+        const container = document.getElementById('user-list');
+        if (!data.users || data.users.length === 0) {
+            container.innerHTML = '<p style="color:var(--gray);">暂无用户</p>';
+            return;
+        }
+        container.innerHTML = data.users.map(u => `
+            <div class="user-item">
+                <div>
+                    <span class="user-name">${u.username}</span>
+                    ${u.is_admin ? '<span class="user-role">管理员</span>' : ''}
+                </div>
+                ${!u.is_admin ? `<button class="btn btn-sm btn-danger" onclick="deleteUser('${u.username}')"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+        `).join('');
+    }
+
+    function deleteUser(username) {
+        showConfirm(`确定删除用户"${username}"吗？该用户的所有数据将被删除。`, async () => {
+            const data = await api('/users/delete', { method: 'POST', body: JSON.stringify({ username }) });
+            if (data.success) { showToast('删除成功'); fetchUsers(); }
+            else showToast(data.error || '删除失败', 'error');
+        });
+    }
+
+    // ===== Time Update =====
+    function updateTime() {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const el = document.getElementById('date-time');
+        if (el) el.textContent = now.toLocaleString('zh-CN', options);
+    }
+
+    // ===== Init =====
+    initAPI();
+    if (AUTH_TOKEN) {
+        showApp();
+    } else {
+        showLoginPage();
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+    // Auto-refresh every 10 seconds
+    setInterval(() => {
+        if (AUTH_TOKEN) refreshAll();
+    }, 10000);
+
+    // Enter key support for login
+    document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('login-username').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
+    document.getElementById('reg-confirm').addEventListener('keypress', e => { if (e.key === 'Enter') doRegister(); });
+    </script>
+</body>
+</html>

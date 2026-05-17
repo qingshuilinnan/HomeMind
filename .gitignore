@@ -1,0 +1,41 @@
+# Qt build artifacts
+build/
+*.pro.user
+*.qbs.user
+*.qmlproject.user
+*.qws
+*.qrc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Executables
+HomeMind
+HomeMind.exe
+
+# Database files
+*.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# MacOS
+.DS_Store
+._*
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
