@@ -4,7 +4,6 @@ build/
 *.qbs.user
 *.qmlproject.user
 *.qws
-*.qrc
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
